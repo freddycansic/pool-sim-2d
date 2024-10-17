@@ -31,7 +31,7 @@ impl Ball {
     }
 
     pub fn new_cue_ball(position: Vector2<f32>) -> Self {
-        Self::new(position, Vector2::new(0.1 * SCALE, 0.0), CUE_RADIUS, WHITE)
+        Self::new(position, Vector2::new(0.0001 * SCALE, 0.0), CUE_RADIUS, WHITE)
     }
 
     pub fn colliding(&self, other: &Ball) -> bool {

@@ -15,7 +15,7 @@ async fn main() {
 
         engine::simulate(&mut balls, get_frame_time());
         let collisions = engine::collisions(&mut balls);
-        engine::resolve(&collisions);
+        engine::resolve(&mut balls, &collisions);
 
         table::render();
         balls.iter().for_each(ball::Ball::render);
