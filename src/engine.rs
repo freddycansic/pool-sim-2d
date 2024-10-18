@@ -1,7 +1,7 @@
 use cgmath::InnerSpace;
 use itertools::Itertools;
 
-use crate::ball::Ball;
+use crate::ball::{Ball, BALL_RESTITUTION};
 use crate::table;
 
 pub fn simulate(balls: &mut [Ball], deltatime: f32) {
@@ -45,8 +45,8 @@ pub fn resolve_ball_collisions(balls: &mut [Ball], collisions: &[(usize, usize)]
         if alignment > 0.0 {
             let transfer_amount = alignment * relative_velocity.magnitude();
 
-            balls[*x].velocity -= collision_normal * transfer_amount;
-            balls[*y].velocity += collision_normal * transfer_amount;
+            balls[*x].velocity -= collision_normal * transfer_amount * BALL_RESTITUTION;
+            balls[*y].velocity += collision_normal * transfer_amount * BALL_RESTITUTION;
         }
     }
 }
