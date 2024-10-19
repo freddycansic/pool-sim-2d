@@ -3,13 +3,14 @@ use cgmath::num_traits::FloatConst;
 use macroquad::color::Color;
 use macroquad::prelude::*;
 
-use crate::{SCALE, GRAVITY, table};
+use crate::{GRAVITY, SCALE, table};
 
 // 1 inch radius
-const BALL_RADIUS: f32 = 0.083333 * SCALE;
-const CUE_RADIUS: f32 = 0.072916 * SCALE;
-pub const BALL_RESTITUTION: f32 = 0.95;
+const BALL_RADIUS: f32 = 0.0254 * SCALE;
+const CUE_RADIUS: f32 = 0.0238125 * SCALE; // Meters
+pub const BALL_RESTITUTION: f32 = 0.90;
 pub const BALL_MASS: f32 = 0.096; // 96 grams
+                                  // Break speed = 7.59m/s
 
 #[derive(Debug, Clone)]
 pub struct Ball {
@@ -34,13 +35,14 @@ impl Ball {
     }
 
     pub fn new_cue_ball(position: Vector2<f32>) -> Self {
-        Self::new(position, Vector2::zero(), CUE_RADIUS, WHITE)
+        Self::new(position, Vector2::new(7.59, 0.0), CUE_RADIUS, WHITE)
     }
-    
+
     pub fn mouse_over(&self) -> bool {
         let (mouse_x, mouse_y) = mouse_position();
 
-        (self.position.x - mouse_x).powf(2.0) + (self.position.y - mouse_y).powf(2.0) < self.radius.powf(2.0)
+        (self.position.x - mouse_x).powf(2.0) + (self.position.y - mouse_y).powf(2.0)
+            < self.radius.powf(2.0)
     }
 
     pub fn colliding(&self, other: &Ball) -> bool {
@@ -48,10 +50,13 @@ impl Ball {
     }
 
     pub fn step(&mut self, deltatime: f32) {
-        self.position += self.velocity * deltatime;
+        self.position += self.velocity * deltatime * SCALE;
 
         if self.velocity.magnitude2() > 0.0 {
-            let friction = -self.velocity.normalize() * (table::SLIDING_FRICTION_COEFFICIENT * BALL_MASS * GRAVITY) * deltatime;
+            let friction = -self.velocity.normalize()
+                * (table::SLIDING_FRICTION_COEFFICIENT * BALL_MASS * GRAVITY)
+                * deltatime;
+
             self.velocity += friction;
 
             // If the velocity and the friction force are aligned then don't apply the friction
@@ -67,8 +72,8 @@ impl Ball {
         draw_line(
             self.position.x,
             self.position.y,
-            self.position.x + self.velocity.x,
-            self.position.y + self.velocity.y,
+            self.position.x + (self.velocity.x * 50.0),
+            self.position.y + (self.velocity.y * 50.0),
             1.0,
             RED,
         );

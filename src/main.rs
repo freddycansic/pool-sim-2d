@@ -1,13 +1,15 @@
+use cgmath::{InnerSpace, Vector2, Zero};
 use macroquad::prelude::*;
-use cgmath::{Vector2, Zero};
+
 use ball::Ball;
 
 mod ball;
 mod engine;
 mod table;
 
-const SCALE: f32 = 100.0;
+const SCALE: f32 = 300.0;
 const GRAVITY: f32 = 9.81;
+const FPS_CAP: f64 = 60.0;
 
 fn window_conf() -> Conf {
     Conf {
@@ -25,7 +27,16 @@ async fn main() {
     let mut dragging = false;
     let mut drag_end = Vector2::zero();
 
+    let mut last_time = get_time();
+
     loop {
+        let elapsed = get_time() - last_time;
+        if elapsed < 1.0 / FPS_CAP {
+            continue;
+        }
+
+        last_time = get_time();
+
         clear_background(WHITE);
 
         engine::simulate(&mut balls, get_frame_time());
@@ -35,7 +46,7 @@ async fn main() {
         engine::resolve_ball_collisions(&mut balls, &ball_collisions);
 
         table::render();
-        balls.iter().for_each(ball::Ball::render);
+        balls.iter().for_each(Ball::render);
 
         if !dragging && is_mouse_down_on_cue(&balls[0]) {
             dragging = true;
@@ -44,13 +55,21 @@ async fn main() {
         if dragging && is_mouse_button_down(MouseButton::Left) {
             drag_end = mouse_position_vector();
 
-            draw_line(balls[0].position.x, balls[0].position.y, drag_end.x, drag_end.y, 1.0, BLUE);
+            draw_line(
+                balls[0].position.x,
+                balls[0].position.y,
+                drag_end.x,
+                drag_end.y,
+                1.0,
+                BLUE,
+            );
         }
 
         if dragging && is_mouse_button_released(MouseButton::Left) {
             dragging = false;
 
-            let force = -(drag_end - balls[0].position);
+            let force = -(drag_end - balls[0].position) / SCALE;
+            dbg!(force.magnitude());
             balls[0].velocity += force * get_frame_time() * 100.0;
         }
         next_frame().await

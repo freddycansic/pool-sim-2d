@@ -2,10 +2,10 @@ use macroquad::prelude::*;
 
 use crate::SCALE;
 
-pub const LENGTH: f32 = 6.0 * SCALE;
-pub const WIDTH: f32 = 3.0 * SCALE;
+pub const LENGTH: f32 = 1.8288 * SCALE;
+pub const WIDTH: f32 = 0.9144 * SCALE;
 pub const COLOR: Color = BROWN;
-pub const WALL_WIDTH: f32 = 0.3 * SCALE;
+pub const WALL_WIDTH: f32 = 0.1 * SCALE;
 pub const WALL_BITE: f32 = 0.98;
 pub const SLIDING_FRICTION_COEFFICIENT: f32 = 0.25;
 pub const ROLLING_FRICTION_COEFFICIENT: f32 = 0.01;
